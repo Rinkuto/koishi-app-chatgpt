@@ -1,7 +1,7 @@
 <a name="YovtD"></a>
 # @rinkuto/koishi-plugin-chatgpt
 <a name="TArcP"></a>
-## ![](https://img.shields.io/npm/v/@rinkuto/koishi-plugin-chatgpt?style=flat-square#id=I0Y4a&originHeight=20&originWidth=80&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=)
+## ![npm](https://img.shields.io/npm/v/@rinkuto/koishi-plugin-chatgpt?style=flat-square) ![npm](https://img.shields.io/npm/dt/@rinkuto/koishi-plugin-chatgpt?style=flat-square) ![npm](https://img.shields.io/npm/l/@rinkuto/koishi-plugin-chatgpt?style=flat-square)
 ![image.png](https://cdn.nlark.com/yuque/0/2023/png/32674329/1678098437827-f2c95a7c-cb72-4525-9257-287504d5623e.png#averageHue=%23e2e0df&clientId=uc8020153-7403-4&from=paste&height=344&id=ucc0c2bbd&name=image.png&originHeight=424&originWidth=766&originalType=binary&ratio=1.2395833730697632&rotation=0&showTitle=false&size=48366&status=done&style=none&taskId=u83b97194-f85f-4614-b14a-900aa154b1a&title=&width=621.9369506835938)
 <a name="HdvfI"></a>
 ## 机器人回复的几种情况
