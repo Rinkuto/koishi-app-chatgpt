@@ -1,0 +1,33 @@
+{
+  "name": "@rinkuto/koishi-plugin-chatgpt",
+  "description": "使用open ai的gpt-3.5-turbo模型",
+  "version": "1.0.7",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "contributors": [
+    "Rinkuto <2175705964@qq.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/Rinkuto/koishi-app-chatgpt",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rinkuto/koishi-app-chatgpt"
+  },
+  "keywords": [
+    "chatbot",
+    "koishi",
+    "plugin",
+    "openai"
+  ],
+  "dependencies": {
+    "openai": "^3.2.1"
+  },
+  "peerDependencies": {
+    "koishi": "^4.11.7"
+  }
+}
