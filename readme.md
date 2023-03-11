@@ -1,7 +1,7 @@
 <a name="YovtD"></a>
 # @rinkuto/koishi-plugin-chatgpt
 <a name="TArcP"></a>
-## [![npm](https://img.shields.io/npm/v/@rinkuto/koishi-plugin-chatgpt?style=flat-square)](https://www.npmjs.com/package/@rinkuto/koishi-plugin-chatgpt) [![npm](https://img.shields.io/npm/dt/@rinkuto/koishi-plugin-chatgpt?style=flat-square)](https://www.npmjs.com/package/@rinkuto/koishi-plugin-chatgpt)
+## ![](https://img.shields.io/npm/v/@rinkuto/koishi-plugin-chatgpt?style=flat-square#id=I0Y4a&originHeight=20&originWidth=80&originalType=binary&ratio=1&rotation=0&showTitle=false&status=done&style=none&title=)
 ![image.png](https://cdn.nlark.com/yuque/0/2023/png/32674329/1678098437827-f2c95a7c-cb72-4525-9257-287504d5623e.png#averageHue=%23e2e0df&clientId=uc8020153-7403-4&from=paste&height=344&id=ucc0c2bbd&name=image.png&originHeight=424&originWidth=766&originalType=binary&ratio=1.2395833730697632&rotation=0&showTitle=false&size=48366&status=done&style=none&taskId=u83b97194-f85f-4614-b14a-900aa154b1a&title=&width=621.9369506835938)
 <a name="HdvfI"></a>
 ## 机器人回复的几种情况
@@ -13,12 +13,12 @@
    <a name="ItKPc"></a>
 ## 祝玩的开心。
 <a name="ekhnX"></a>
-<br/>
-<br/>
 # 配置
 
+---
+
 <a name="OfauW"></a>
-## ChatGPT 配置
+## ChatGPT 设置
 <a name="qvL2x"></a>
 ### apiKey*
 
@@ -33,24 +33,16 @@
 - Default: `false`
 
 是否启动代理。
-<a name="Nb18X"></a>
-### isEnv
-
-- Type: `Boolean`
-- Default: `false`
-
-代理是否修改环境变量，当`isProxy`为`true`时会将`HTTP_PROXY`等环境变量修改。
 <a name="Ca5LO"></a>
 ### proxyHost
 
 - Type: `String`
 - Default: `http://127.0.0.1:7890`
 
-代理服务器地址，仅在`isProxy`为`true`时才有效，更多关于代理的问题请看<a href="#proxy">关于代理</a>。
+代理服务器地址，仅在`isProxy`为`true`时才有效。
 
 <a name="s8DRE"></a>
-<br/>
-## 机器人 配置
+## 机器人 设置
 <a name="CfkOj"></a>
 ### botName
 
@@ -69,9 +61,54 @@
 - Type: `Dict<string, string>`
 
 与机器人的示例对话，用来调教Chat GPT，不宜太长，不然会消耗大量的$Token$。
+
+<a name="jHlHf"></a>
+## 关键词 设置
+<a name="c8rKz"></a>
+### keyWordType
+
+- Type: `String`
+- Default: `chatgpt`
+
+关键词提取方式，目前支持`chatgpt`和`tencent`两种方式，以后会增加其他的。`chatgpt`是通过询问Chat GPT这句话的关键词获得的(会消耗$Token$)，`tencent`则是通过篇章分析的[关键词提取](https://cloud.tencent.com/document/product/271/35498)获得的(免费额度为每日$50W$次调用)。
+<a name="IxKdj"></a>
+### keyWordLength
+
+- Type: `Number`
+- Default: `3`
+
+获取的关键词个数，在1到5之间的整数。
+<a name="g6TFZ"></a>
+### keyWordKey
+
+- Type: `Object`
+
+第三方api的key，目前只有`tencent`需要。若选择为`chatgpt`可以留空。
+<a name="Vpy7t"></a>
+## 搜索 设置
+<a name="vkRZu"></a>
+### isUseSearch
+
+- Type: `Boolean`
+- Default: `true`
+
+是否启用搜索，启用后会根据关键词在搜索引擎上搜索，给Chat GPT作为提示，默认为`true`。
+<a name="GP6LQ"></a>
+### searchNumber
+
+- Type: `number`
+- Default: `1`
+
+搜索的条数，
+<a name="NU0Rn"></a>
+### searchType
+
+- Type: `String`
+- Default: `bing`
+
+搜索引擎的类型，目前只支持bing([https://cn.bing.com/](https://cn.bing.com/))，以后会增加其他的。
 <a name="dJBTZ"></a>
-<br/>
-## 回复 配置
+## 回复 设置
 <a name="KgSE1"></a>
 ### maxTokens
 
@@ -113,18 +150,10 @@
 - Type: `Number`
 - Default: `5`
 
-能记住的确切对话轮数，一问一答算一轮对话，不宜太高，会消耗大量$Token$。
-<a name="PzyDN"></a>
-### fuzzyMemoryLength
-
-- Type: `Number`
-- Default: `15`
-
-能记住的模糊对话轮数，一问一答算一轮对话，不宜太高，会消耗大量$Token$。
+能记住的对话轮数，一问一答算一轮对话，不宜太高，会消耗大量$Token$。
 
 <a name="fhOFz"></a>
-<br/>
-## 日志 配置
+## 日志 设置
 <a name="nR7gY"></a>
 ### isLog
 
@@ -134,7 +163,6 @@
 是否向控制台输出日志
 
 <a name="LtnSh"></a>
-<br/>
 # 命令
 <a name="JuHPr"></a>
 ## reset
@@ -142,16 +170,10 @@
 - alias 重置
 
 重置机器人关于你的记忆。
-
+<a name="pcEdw"></a>
 ## balance
-
 
 - alias 余额
 
-查询Open Api的余额。
-
-
-<a id="proxy"></a>
-# 关于代理
-这个方法在`Win 10`和`Centos 7`上使用是成功的，此插件设置代理是通过`process.env`设置环境变量`HTTP_PROXY`和`HTTPS_PROXY`完成。当`isProxy`为`true`，且`isEnv`为`true`时，才会修改环境变量，若`isProxy`为`true`，且`isEnv`为`false`时，则会通过`AxiosRequestConfig`设置代理服务器。<br />Clash的端口默认是$7890$，因此代理服务器的地址为`http://127.0.0.1:7890`。~~如果是桌面应用程序，或许得将代理服务器的地址设置为~~`~~socks://127.0.0.1:7890~~`~~，同时开启TUN模式??~~。
+查看当前$OnenAi$的$apiKey$的余额
 
