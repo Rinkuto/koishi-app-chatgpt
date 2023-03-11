@@ -9,7 +9,7 @@ export class BingSearch extends Search {
     if (main === null) {
       return [];
     }
-    const searchResult = [];
+    const searchResult:string[] = [];
     const tobeRemoved = main.querySelectorAll('script,noscript,style,meta,button,input,img,svg,canvas,header,footer,video,audio,embed')
     tobeRemoved.forEach(item => item.remove());
     for (let item of main.children) {

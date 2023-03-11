@@ -13,13 +13,14 @@ export interface Config {
   frequencyPenalty: number
   replyRate: number
   isLog: boolean
+  isDebug: boolean
   maxMemoryLength: number
 
   keyWordType: string
   keyWordLength: number,
   keyWordKey: {
-    secretId: string,
-    secretKey: string,
+    secretId?: string,
+    secretKey?: string,
   }
 
   isUseSearch: boolean
@@ -68,6 +69,10 @@ export const Config: Schema<Config> = Schema.intersect([
     keyWordLength: Schema.number().default(3).description('关键词的个数')
       .min(1).max(5).step(1),
     keyWordKey: Schema.object({secretId: String, secretKey: String}).role('secret')
+      .default({
+        secretId: '',
+        secretKey: '',
+      })
       .description('关键词提取的API Key，目前只有腾讯AI的API Key')
   }).description('关键词 设置'),
 
@@ -75,7 +80,7 @@ export const Config: Schema<Config> = Schema.intersect([
     isUseSearch: Schema.boolean().default(true).description('是否使用搜索引擎'),
     searchNumber: Schema.number().default(1).description('搜索数据的条数')
       .min(1).max(3).step(1),
-    searchType: Schema.union(['bing']).default('bing').description('搜索引擎的类型，目前只支持bing，以后会考虑增加其他的搜索引擎'),
+    searchType: Schema.union(['bing', 'baidu']).default('bing').description('搜索引擎的类型，目前只支持bing和百度，以后会考虑增加其他的搜索引擎'),
   }).description('搜索 设置'),
 
   Schema.object({
@@ -96,5 +101,6 @@ export const Config: Schema<Config> = Schema.intersect([
 
   Schema.object({
     isLog: Schema.boolean().default(true).description('是否打印日志'),
+    isDebug: Schema.boolean().default(false).description('是否打印调试日志'),
   }).description('日志 设置')
 ])

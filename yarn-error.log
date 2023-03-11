@@ -1,0 +1,66 @@
+Arguments: 
+  D:\node.js\node.exe C:\Users\r325t\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js config get npmScopes --json
+
+PATH: 
+  C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Bandizip\;D:\EasyShare\x86\;D:\EasyShare\x64\;"C:\Program Files\Java\jdk-17.0.4\bin;C:\Program Files\Java\jdk-17.0.4\jre\bin;";D:\a\Maven\apache-maven-3.8.5\bin;D:\node.js\node_global;D:\Dev-Cpp\MinGW64\bin;D:\Git\cmd;;D:\微信web开发者工具\dll;D:\node.js\;C:\Users\r325t\AppData\Local\Programs\Python\Python310\Scripts\;C:\Users\r325t\AppData\Local\Programs\Python\Python310\;C:\Users\r325t\AppData\Local\Microsoft\WindowsApps;;D:\Microsoft VS Code\bin;D:\PyCharm 2022.2\bin;;D:\CLion 2022.2.2\bin;;D:\WebStorm 2022.3.2\bin;;C:\Users\r325t\AppData\Roaming\npm
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  18.14.2
+
+Platform: 
+  win32 x64
+
+Trace: 
+  SyntaxError: D:\a\bot\koishi-app\external\chatgpt\package.json: Unexpected token t in JSON at position 652
+      at JSON.parse (<anonymous>)
+      at C:\Users\r325t\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:1629:59
+      at Generator.next (<anonymous>)
+      at step (C:\Users\r325t\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:310:30)
+      at C:\Users\r325t\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "@rinkuto/koishi-plugin-chatgpt",
+    "description": "使用open ai的gpt-3.5-turbo模型",
+    "version": "1.1.1",
+    "main": "lib/index.js",
+    "typings": "lib/index.d.ts",
+    "files": [
+      "lib",
+      "dist"
+    ],
+    "contributors": [
+      "Rinkuto <2175705964@qq.com>"
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/Rinkuto/koishi-app-chatgpt",
+    "scripts": {},
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/Rinkuto/koishi-app-chatgpt"
+    },
+    "keywords": [
+      "chatbot",
+      "koishi",
+      "plugin",
+      "openai"
+    ],
+    "dependencies": {
+      "@dqbd/tiktoken": "^0.4.0",
+      "jsdom": "^21.1.0",
+      "openai": "^3.2.1",
+      tencentcloud-sdk-nodejs-nlp
+    },
+    "peerDependencies": {
+      "koishi": "^4.11.7"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

@@ -88,7 +88,7 @@
 - Type: `String`
 - Default: `bing`
 
-搜索引擎的类型，目前只支持bing([https://cn.bing.com/](https://cn.bing.com/))，以后会增加其他的。
+搜索引擎的类型，目前只支持bing([https://cn.bing.com/](https://cn.bing.com/))和百度([http://www.baidu.com](http://www.baidu.com))，以后会增加其他的。
 ## 回复 设置
 ### maxTokens
 

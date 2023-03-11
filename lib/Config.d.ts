@@ -12,12 +12,13 @@ export interface Config {
     frequencyPenalty: number;
     replyRate: number;
     isLog: boolean;
+    isDebug: boolean;
     maxMemoryLength: number;
     keyWordType: string;
     keyWordLength: number;
     keyWordKey: {
-        secretId: string;
-        secretKey: string;
+        secretId?: string;
+        secretKey?: string;
     };
     isUseSearch: boolean;
     searchNumber: number;

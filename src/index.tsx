@@ -7,6 +7,8 @@ import {BingSearch} from "./search/BingSearch";
 import {KeyWord} from "./keyword/KeyWord";
 import {ChatGptKeyWord} from "./keyword/ChatGptKeyWord";
 import {TencentKeyWord} from "./keyword/TencentKeyWord";
+import {BaiduSearch} from "./search/BaiduSearch";
+import {GoogleSearch} from "./search/GoogleSearch";
 
 export const name = 'chatgpt'
 export * from './Config'
@@ -83,11 +85,15 @@ export function apply(ctx: Context, config: Config) {
       }
       if (keyWords.trim() !== undefined && keyWords.trim() !== '' && keyWords.trim()[0] !== '无') {
         const Search = searchContent.get(config.searchType);
-        const search = await Search.search(keyWords.trim().split(' ').splice(0, 4));
+        const search = await Search.search(keyWords.trim().split(' '));
+        if (config.isDebug) {
+          logger.info(`search：${search}`);
+        }
         if (search !== undefined && search.length > 0) {
           messages = AskChatGPT.createRequestMessages(userMemory, search);
         }
       }
+      return await next();
     }
 
     // 将用户输入添加到消息队列
@@ -157,6 +163,8 @@ const send = async (replyType: number, replyText: string, session: Session) => {
 
 const initSearchContent = (http: Quester, config: Config) => {
   searchContent.set('bing', new BingSearch(http, config));
+  searchContent.set('baidu', new BaiduSearch(http, config));
+  searchContent.set('google', new GoogleSearch(http, config));
 }
 
 const initKeyWordsContent = (http: Quester, config: Config) => {

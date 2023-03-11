@@ -1,7 +1,7 @@
 {
   "name": "@rinkuto/koishi-plugin-chatgpt",
   "description": "使用open ai的gpt-3.5-turbo模型",
-  "version": "1.1.1",
+  "version": "1.1.4",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -27,7 +27,8 @@
   "dependencies": {
     "@dqbd/tiktoken": "^0.4.0",
     "jsdom": "^21.1.0",
-    "openai": "^3.2.1"
+    "openai": "^3.2.1",
+    "tencentcloud-sdk-nodejs-nlp": "^4.0.556"
   },
   "peerDependencies": {
     "koishi": "^4.11.7"
