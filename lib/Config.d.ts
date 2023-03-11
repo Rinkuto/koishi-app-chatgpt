@@ -6,7 +6,6 @@ export interface Config {
     isProxy: boolean;
     temperature: number;
     maxTokens: number;
-    isEnv: boolean;
     sampleDialog: Dict<string, string>;
     selfIntroduction: string;
     presencePenalty: number;
@@ -14,6 +13,14 @@ export interface Config {
     replyRate: number;
     isLog: boolean;
     maxMemoryLength: number;
-    fuzzyMemoryLength: number;
+    keyWordType: string;
+    keyWordLength: number;
+    keyWordKey: {
+        secretId: string;
+        secretKey: string;
+    };
+    isUseSearch: boolean;
+    searchNumber: number;
+    searchType: string;
 }
 export declare const Config: Schema<Config>;

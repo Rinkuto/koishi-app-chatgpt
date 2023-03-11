@@ -7,8 +7,6 @@ export interface Config {
   isProxy: boolean
   temperature: number
   maxTokens: number
-  isEnv: boolean
-
   sampleDialog: Dict<string, string>
   selfIntroduction: string
   presencePenalty: number
@@ -16,7 +14,17 @@ export interface Config {
   replyRate: number
   isLog: boolean
   maxMemoryLength: number
-  fuzzyMemoryLength: number
+
+  keyWordType: string
+  keyWordLength: number,
+  keyWordKey: {
+    secretId: string,
+    secretKey: string,
+  }
+
+  isUseSearch: boolean
+  searchNumber: number
+  searchType: string
 }
 
 /*  什么叠buff???
@@ -36,15 +44,14 @@ export interface Config {
 export const Config: Schema<Config> = Schema.intersect([
   Schema.object({
     apiKey: Schema.string().required().role('secret').description('OpenAI 的 API Key'),
-    isProxy: Schema.boolean().default(false).description('是否使用代理'),
-    isEnv: Schema.boolean().default(false).description('是否修改环境变量'),
+    isProxy: Schema.boolean().default(true).description('是否使用代理'),
     proxyHost: Schema.string().default('http://127.0.0.1:7890').description('代理地址'),
-  }).description('ChatGPT 配置'),
+  }).description('ChatGPT 设置'),
 
   Schema.object({
     botName: Schema.string().default('巧克力').description('机器人的名字'),
-    selfIntroduction: Schema.string()
-      .default('我的名字叫巧克力，是一只个性率直的犬系猫娘。性格可爱、粘人、十分忠诚、对主人很专一，喜好：被人摸、卖萌，爱好：看小说')
+    selfIntroduction: Schema.string().role('textarea')
+      .default('姓名：巧克力，是一只个性率直的犬系猫娘。性格可爱、粘人、十分忠诚、对主人很专一，喜好：被人摸、卖萌，爱好：看小说')
       .description('机器人的自我介绍，不宜太长，不然会消耗太多的token'),
     sampleDialog: Schema.dict(String).description('用于人设，不宜太多，不然会消耗太多的token')
       .default({
@@ -53,7 +60,23 @@ export const Config: Schema<Config> = Schema.intersect([
         '巧克力，笑一个': '（笑~）好的主人喵~',
         '巧克力 喵一声': '喵，喵喵喵~',
       }),
-  }).description('机器人 配置'),
+  }).description('机器人 设置'),
+
+  Schema.object({
+    keyWordType: Schema.union(['chatgpt', 'tencent'])
+      .default('chatgpt').description('关键词提取方式，目前支持chatgpt和tencent，以后会增加其他的'),
+    keyWordLength: Schema.number().default(3).description('关键词的个数')
+      .min(1).max(5).step(1),
+    keyWordKey: Schema.object({secretId: String, secretKey: String}).role('secret')
+      .description('关键词提取的API Key，目前只有腾讯AI的API Key')
+  }).description('关键词 设置'),
+
+  Schema.object({
+    isUseSearch: Schema.boolean().default(true).description('是否使用搜索引擎'),
+    searchNumber: Schema.number().default(1).description('搜索数据的条数')
+      .min(1).max(3).step(1),
+    searchType: Schema.union(['bing']).default('bing').description('搜索引擎的类型，目前只支持bing，以后会考虑增加其他的搜索引擎'),
+  }).description('搜索 设置'),
 
   Schema.object({
     maxTokens: Schema.number().description('每次回复的最大Token数量')
@@ -69,11 +92,9 @@ export const Config: Schema<Config> = Schema.intersect([
       .min(0).max(1).step(0.1).default(0.1),
     maxMemoryLength: Schema.number().description('最大记忆长度，太大会消耗大量的token')
       .min(1).max(10).step(1).default(5),
-    fuzzyMemoryLength: Schema.number().description('模糊记忆长度')
-      .min(1).max(30).step(1).default(15),
-  }).description('回复 配置'),
+  }).description('回复 设置'),
 
   Schema.object({
     isLog: Schema.boolean().default(true).description('是否打印日志'),
-  }).description('日志 配置')
+  }).description('日志 设置')
 ])

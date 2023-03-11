@@ -1,12 +1,21 @@
-import {Context, Random, Schema, Session} from 'koishi'
+import {Context, Quester, Random, Schema, Session} from 'koishi'
 import {Config} from './Config'
 import {MemoryManager} from "./Memory";
 import {AskChatGPT} from "./AskChatGPT";
+import {Search} from "./search/Search";
+import {BingSearch} from "./search/BingSearch";
+import {KeyWord} from "./keyword/KeyWord";
+import {ChatGptKeyWord} from "./keyword/ChatGptKeyWord";
+import {TencentKeyWord} from "./keyword/TencentKeyWord";
 
 export const name = 'chatgpt'
 export * from './Config'
 
 const isDebug = true;
+
+// 以后可以考虑加入更多的搜索引擎
+const searchContent = new Map<string, Search>();
+const keyWordsContent = new Map<string, KeyWord>();
 
 // 获取回复类型
 const getReplyType = (session: Session, config: Config) => {
@@ -32,16 +41,9 @@ export function apply(ctx: Context, config: Config) {
   // write your plugin here
   MemoryManager.setConfig(config);
   AskChatGPT.setConfig(config);
-
-  if (config.isProxy) {
-    if (config.isEnv) {
-      process.env.HTTP_PROXY = config.proxyHost;
-      process.env.HTTPS_PROXY = config.proxyHost;
-    }
-  } else {
-    process.env.HTTP_PROXY = '';
-    process.env.HTTPS_PROXY = '';
-  }
+  AskChatGPT.setHttp(ctx.http);
+  initSearchContent(ctx.http, config);
+  initKeyWordsContent(ctx.http, config);
 
   ctx.middleware(async (session, next) => {
     if (ctx.bots[session.userId]) {
@@ -62,27 +64,53 @@ export function apply(ctx: Context, config: Config) {
       logger.info(`receive ${session.username} message：${input}`);
     }
 
-    if (MemoryManager.getMemory(session.userId) === undefined) {
+    if (MemoryManager.getUserMemory(session.userId) === undefined) {
       MemoryManager.createMemory(session.userId, session.username);
       if (config.isLog) {
         logger.info('认识了新朋友：', session.username);
       }
     }
-    const memory = MemoryManager.getMemory(session.userId);
-    const reply = await AskChatGPT.askChatGPT(memory, input);
 
+    const userMemory = MemoryManager.getUserMemory(session.userId);
+    let messages = AskChatGPT.createRequestMessages(userMemory);
 
-    send(replyType, reply, session).then(async () => {
+    // 获取关键词，通过关键词搜索
+    if (config.isUseSearch) {
+      const keyWordUtil = keyWordsContent.get(config.keyWordType);
+      const keyWords = await keyWordUtil.getKeyWords(input);
       if (config.isLog) {
-        logger.info(`reply ${session.username}：${reply}`);
+        logger.info(`keyWords：${keyWords}`);
       }
-      const keyWords = await AskChatGPT.getLastSentenceKeyWords(memory);
-      memory.addMemory({user: input, bot: reply});
-      memory.addFuzzyMemory(keyWords);
-    }).catch((e) => {
-      logger.error('reply error：', e);
-    });
+      if (keyWords.trim() !== undefined && keyWords.trim() !== '' && keyWords.trim()[0] !== '无') {
+        const Search = searchContent.get(config.searchType);
+        const search = await Search.search(keyWords.trim().split(' ').splice(0, 4));
+        if (search !== undefined && search.length > 0) {
+          messages = AskChatGPT.createRequestMessages(userMemory, search);
+        }
+      }
+    }
 
+    // 将用户输入添加到消息队列
+    messages.push(AskChatGPT.setUserPrompt(input, userMemory.username));
+
+    // 回复
+    AskChatGPT.askChatGPT(messages).then(reply => {
+      send(replyType, reply, session).then(async () => {
+        if (config.isLog) {
+          logger.info(`reply ${session.username}：${reply}`);
+        }
+        userMemory.addMemory({user: input, bot: reply});
+      }).catch((e) => {
+        logger.error('reply error：', e);
+      });
+    }).catch((e: any) => {
+      logger.error(e);
+      if (e.errno === -4039) {
+        send(replyType, '请求失败，请稍后再试\nerror code: connect ETIMEDOUT', session);
+      } else {
+        send(replyType, `请求失败，请稍后再试\nerror code: ${e.response.status}`, session);
+      }
+    });
     return await next();
   });
 
@@ -95,17 +123,48 @@ export function apply(ctx: Context, config: Config) {
       }
       await send(getReplyType(session, config), '记忆已重置', session);
     });
+
+  ctx.command('balance', '查询余额')
+    .alias('余额')
+    .action(async ({session}) => {
+      const balance = await AskChatGPT.getBalance();
+      await send(getReplyType(session, config),
+        `余额：$${balance.total_used.toFixed(2)} / $${balance.total_granted.toFixed(2)}\n已用 ${(balance.total_used / balance.total_granted * 100).toFixed(2)}%`,
+        session);
+    });
 }
 
 const send = async (replyType: number, replyText: string, session: Session) => {
   if (replyType === 0) {
-    await session.send(replyText);
+    await session.send(replyText).then(res => {
+      if (res.length === 0) {
+        send(replyType, '回复失败', session)
+      }
+    });
   } else {
     await session.send(
       <>
         <at id={session.userId}/>
         <text content={replyText}/>
       </>
-    )
+    ).then(res => {
+      if (res.length === 0) {
+        send(replyType, '回复失败', session)
+      }
+    })
   }
 }
+
+const initSearchContent = (http: Quester, config: Config) => {
+  searchContent.set('bing', new BingSearch(http, config));
+}
+
+const initKeyWordsContent = (http: Quester, config: Config) => {
+  keyWordsContent.set('chatgpt', new ChatGptKeyWord(http, config));
+  keyWordsContent.set('tencent', new TencentKeyWord(http, config));
+}
+
+
+
+
+

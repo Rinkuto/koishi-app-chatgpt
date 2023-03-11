@@ -143,6 +143,13 @@
 
 重置机器人关于你的记忆。
 
+## balance
+
+
+- alias 余额
+
+查询Open Api的余额。
+
 
 <a id="proxy"></a>
 # 关于代理

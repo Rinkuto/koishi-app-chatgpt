@@ -5,7 +5,7 @@ export class MemoryManager {
 
   private static config: Config;
 
-  public static getMemory(userId: string) {
+  public static getUserMemory(userId: string) {
     return this.memory.get(userId);
   }
 
@@ -15,7 +15,7 @@ export class MemoryManager {
 
   public static createMemory(userId: string, username: string) {
     if (this.memory.has(userId) === false) {
-      this.memory.set(userId, new UserMemory(username, this.config.maxMemoryLength, this.config.fuzzyMemoryLength));
+      this.memory.set(userId, new UserMemory(username, this.config.maxMemoryLength));
       for (let key in this.config.sampleDialog) {
         this.memory.get(userId).addMemory({user: key, bot: this.config.sampleDialog[key]});
       }
@@ -34,17 +34,14 @@ export class MemoryManager {
 
 export class UserMemory {
   private memory: { user: string, bot: string }[] = [];
-  private fuzzyMemory: string[] = [];
   public readonly username: string;
 
   private readonly maxMemoryLength: number;
-  private readonly fuzzyMemoryLength: number;
 
 
-  constructor(username: string, maxMemoryLength: number, fuzzyMemoryLength: number) {
+  constructor(username: string, maxMemoryLength: number) {
     this.username = username;
     this.maxMemoryLength = maxMemoryLength;
-    this.fuzzyMemoryLength = fuzzyMemoryLength;
   }
 
   public addMemory(content: { user: string, bot: string }) {
@@ -54,44 +51,7 @@ export class UserMemory {
     this.memory.push(content);
   }
 
-  public addFuzzyMemory(content: string) {
-    if (this.fuzzyMemory.length >= this.fuzzyMemoryLength) {
-      this.fuzzyMemory.shift();
-    }
-    this.fuzzyMemory.push(content);
-  }
-
-  public getMessage() {
-    let fuzzyMemory: string;
-    if (this.fuzzyMemory.length > 0) {
-      fuzzyMemory = this.fuzzyMemory.join('\n');
-    } else {
-      fuzzyMemory = '刚认识不久，还没说过话';
-    }
-    fuzzyMemory = `我记得和${this.username}说过的关键词是：\n${fuzzyMemory}`;
-
-    let memory: string;
-    if (this.memory.length > 0) {
-      memory = this.memory.map(item=>{
-        return `${this.username}：${item.user} 我：${item.bot}`;
-      }).join('\n');
-    } else {
-      memory = '刚认识不久，还没聊过天';
-    }
-    memory = `我和${this.username}最近的聊天是：\n${memory}`;
-
-    return {
-      fuzzyMemory: fuzzyMemory,
-      memory: memory,
-      lastMessage: this.memory[this.memory.length - 1]
-    };
-  }
-
   public getMemory() {
     return this.memory;
-  }
-
-  public getFuzzyMemory() {
-    return this.fuzzyMemory;
   }
 }
