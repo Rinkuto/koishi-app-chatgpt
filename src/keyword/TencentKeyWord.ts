@@ -5,8 +5,8 @@ export class TencentKeyWord extends KeyWord {
 
   private readonly clientConfig = {
     credential: {
-      secretId: this.config.keyWordKey.secretId,
-      secretKey: this.config.keyWordKey.secretKey,
+      secretId: this.config.secretId,
+      secretKey: this.config.secretKey,
     },
     region: "ap-guangzhou",
     profile: {

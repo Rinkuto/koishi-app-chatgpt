@@ -5,23 +5,23 @@ export interface Config {
     proxyHost: string;
     isProxy: boolean;
     temperature: number;
-    maxTokens: number;
+    maxReplyTokens: number;
+    maxRequestLength: number;
     sampleDialog: Dict<string, string>;
     selfIntroduction: string;
     presencePenalty: number;
     frequencyPenalty: number;
     replyRate: number;
+    maxMemoryLength: number;
+    isAt: boolean;
     isLog: boolean;
     isDebug: boolean;
-    maxMemoryLength: number;
     keyWordType: string;
     keyWordLength: number;
-    keyWordKey: {
-        secretId?: string;
-        secretKey?: string;
-    };
+    secretId?: string;
+    secretKey?: string;
     isUseSearch: boolean;
-    searchNumber: number;
-    searchType: string;
+    searchNumber?: number;
+    searchType?: string;
 }
 export declare const Config: Schema<Config>;

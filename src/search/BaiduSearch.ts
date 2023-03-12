@@ -20,7 +20,7 @@ export class BaiduSearch extends Search {
 
   async search(keyword: string[]): Promise<string[]> {
     const response = await this.http.get('http://www.baidu.com/s', this.requestConfig(keyword));
-    const dom = new JSDOM(String(response)).window.document
+    const dom = new JSDOM(String(response)).window.document as Document;
     const main = dom.querySelector('#content_left');
     if (main === null) {
       return [];

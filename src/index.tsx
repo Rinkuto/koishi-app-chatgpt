@@ -9,11 +9,10 @@ import {ChatGptKeyWord} from "./keyword/ChatGptKeyWord";
 import {TencentKeyWord} from "./keyword/TencentKeyWord";
 import {BaiduSearch} from "./search/BaiduSearch";
 import {GoogleSearch} from "./search/GoogleSearch";
+import {config} from "yakumo";
 
 export const name = 'chatgpt'
 export * from './Config'
-
-const isDebug = true;
 
 // 以后可以考虑加入更多的搜索引擎
 const searchContent = new Map<string, Search>();
@@ -76,6 +75,11 @@ export function apply(ctx: Context, config: Config) {
     const userMemory = MemoryManager.getUserMemory(session.userId);
     let messages = AskChatGPT.createRequestMessages(userMemory);
 
+    if (config.isDebug) {
+      logger.debug(`keyWordType：${config.keyWordType}`);
+      logger.debug(`searchType：${config.searchType}`);
+      logger.debug(`isUseSearch：${config.isUseSearch}`);
+    }
     // 获取关键词，通过关键词搜索
     if (config.isUseSearch) {
       const keyWordUtil = keyWordsContent.get(config.keyWordType);
@@ -87,13 +91,12 @@ export function apply(ctx: Context, config: Config) {
         const Search = searchContent.get(config.searchType);
         const search = await Search.search(keyWords.trim().split(' '));
         if (config.isDebug) {
-          logger.info(`search：${search}`);
+          logger.debug(`search：${search}`);
         }
         if (search !== undefined && search.length > 0) {
           messages = AskChatGPT.createRequestMessages(userMemory, search);
         }
       }
-      return await next();
     }
 
     // 将用户输入添加到消息队列
@@ -101,7 +104,7 @@ export function apply(ctx: Context, config: Config) {
 
     // 回复
     AskChatGPT.askChatGPT(messages).then(reply => {
-      send(replyType, reply, session).then(async () => {
+      send(replyType, reply, session, config).then(async () => {
         if (config.isLog) {
           logger.info(`reply ${session.username}：${reply}`);
         }
@@ -112,9 +115,9 @@ export function apply(ctx: Context, config: Config) {
     }).catch((e: any) => {
       logger.error(e);
       if (e.errno === -4039) {
-        send(replyType, '请求失败，请稍后再试\nerror code: connect ETIMEDOUT', session);
+        send(replyType, '请求失败，请稍后再试\nerror code: connect ETIMEDOUT', session, config);
       } else {
-        send(replyType, `请求失败，请稍后再试\nerror code: ${e.response.status}`, session);
+        send(replyType, `请求失败，请稍后再试\nerror code: ${e.response.status}`, session, config);
       }
     });
     return await next();
@@ -127,7 +130,7 @@ export function apply(ctx: Context, config: Config) {
       if (config.isLog) {
         logger.info('reset memory:', session.username, '');
       }
-      await send(getReplyType(session, config), '记忆已重置', session);
+      await send(getReplyType(session, config), '记忆已重置', session, config);
     });
 
   ctx.command('balance', '查询余额')
@@ -136,15 +139,15 @@ export function apply(ctx: Context, config: Config) {
       const balance = await AskChatGPT.getBalance();
       await send(getReplyType(session, config),
         `余额：$${balance.total_used.toFixed(2)} / $${balance.total_granted.toFixed(2)}\n已用 ${(balance.total_used / balance.total_granted * 100).toFixed(2)}%`,
-        session);
+        session, config);
     });
 }
 
-const send = async (replyType: number, replyText: string, session: Session) => {
-  if (replyType === 0) {
+const send = async (replyType: number, replyText: string, session: Session, config: Config) => {
+  if (replyType === 0 || config.isAt === false) {
     await session.send(replyText).then(res => {
       if (res.length === 0) {
-        send(replyType, '回复失败', session)
+        send(replyType, '回复失败', session, config)
       }
     });
   } else {
@@ -155,7 +158,7 @@ const send = async (replyType: number, replyText: string, session: Session) => {
       </>
     ).then(res => {
       if (res.length === 0) {
-        send(replyType, '回复失败', session)
+        send(replyType, '回复失败', session, config)
       }
     })
   }
